@@ -12,13 +12,13 @@ include("src/SampleFunctions.jl")
 
 # ╔═╡ 981a1eae-8801-45b8-a401-6394a0ca5248
 begin
-	λ = 0.6
-	u(c::Float64) = SampleFunctions.u(c, λ)
+	γ = 0.6
+	u(c::Float64) = SampleFunctions.u(c, γ)
 	u′(c::Float64) = autodiff(Reverse, u, Active, Active(c))[1][1]
 end
 
 # ╔═╡ 8a2682b1-24fd-41ea-a7e6-c656b8705092
-plot(0:0.01:3, [u, u′], layout = (1, 2), label = ["u(c)" "u'(c)"])
+plot(0:0.03:3, [u, u′], title = "Utility function and its derivate when γ = $γ", label = ["u(c)" "u'(c)"])
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """

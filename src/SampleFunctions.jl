@@ -1,9 +1,9 @@
 module SampleFunctions
 
-"""Utility function u(c) with given λ."""
-function u(c::Float64, λ::Float64)::Float64
-    @assert 0 <= λ < 1
-    c ^ (1 - λ) / (1 - λ)
+"""Utility function u(c) with given γ."""
+function u(c::Float64, γ::Float64)::Float64
+    @assert 0 <= γ < 1
+    c ^ (1 - γ) / (1 - γ)
 end
 
 end # module SampleFunctions
