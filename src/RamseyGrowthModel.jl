@@ -1,15 +1,35 @@
 module RamseyGrowthModel
+
+export RCKModel
+
+using Roots
 using Enzyme
-export solveRCK
 
 include("sample_functions.jl")
 
-function solveRCK(γ::Float64, β::Float64, δ::Float64, α::Float64, A::Float64)
-    u(c::Float64) = SampleFunctions.u(c, γ)
-    f(K_t::Float64) = SampleFunctions.f(K_t, A, α)
+struct RCKModel
+    β::Float64   # discount factor
+    δ::Float64   # depreciation rate on capital
+    u::Function   # utility function
+    f::Function   # production function
+end
 
-    u′(c::Float64) = autodiff(Reverse, u, Active, Active(c))[1][1]
-    f′(K_t::Float64) = autodiff(Reverse, f, Active, Active(K_t))[1][1]
+RCKModel(
+    β::Float64,
+    δ::Float64,
+    γ::Float64,  # coefficient of relative risk aversion
+    α::Float64,  # return to capital per capita
+    A::Float64   # technology
+) = RCKModel(β, δ, sample_u(γ), sample_f(A, α))
+
+function next_k_c(model::RCKModel, k, c)::Tuple{Float64, Float64}
+    u′(c::Float64) = autodiff(Reverse, model.u, Active, Active(c))[1][1]
+    f′(K_t::Float64) = autodiff(Reverse, model.f, Active, Active(K_t))[1][1]
+
+    next_k = model.f(k) + (1 - model.δ) * k - c
+    next_k >= 0 || error("Capital k is negative!")
+    next_c = find_zero(x -> u′(x) - u′(c) / (model.β * (f′(next_k) + 1 - model.δ)), (0, Inf64))
+    next_k, next_c
 end
 
 end # module RamseyGrowthModel
