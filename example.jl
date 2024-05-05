@@ -14,7 +14,7 @@ end
 using Plots
 
 # ╔═╡ 9acaaaf8-fc92-487b-9c37-40e640b9a6c4
-my_model = RCKModel(0.95, 0.02, 0.7, 0.33, 1.0)
+my_model = GrowthModel(0.95, 0.02, 0.7, 0.33, 1.0)
 
 # ╔═╡ 62a55726-2bfc-451c-8d81-815fe32996f0
 begin

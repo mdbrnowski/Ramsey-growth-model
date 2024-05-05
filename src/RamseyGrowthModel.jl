@@ -1,28 +1,28 @@
 module RamseyGrowthModel
 
-export RCKModel
+export GrowthModel
 
 using Roots
 using Enzyme
 
 include("sample_functions.jl")
 
-struct RCKModel
+struct GrowthModel
     β::Float64   # discount factor
     δ::Float64   # depreciation rate on capital
     u::Function   # utility function
     f::Function   # production function
 end
 
-RCKModel(
+GrowthModel(
     β::Float64,
     δ::Float64,
     γ::Float64,  # coefficient of relative risk aversion
     α::Float64,  # return to capital per capita
     A::Float64   # technology
-) = RCKModel(β, δ, sample_u(γ), sample_f(A, α))
+) = GrowthModel(β, δ, sample_u(γ), sample_f(A, α))
 
-function next_k_c(model::RCKModel, k, c)::Tuple{Float64, Float64}
+function next_k_c(model::GrowthModel, k, c)::Tuple{Float64, Float64}
     u′(c::Float64) = autodiff(Reverse, model.u, Active, Active(c))[1][1]
     f′(K_t::Float64) = autodiff(Reverse, model.f, Active, Active(K_t))[1][1]
 
