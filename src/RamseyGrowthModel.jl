@@ -2,8 +2,8 @@ module RamseyGrowthModel
 
 export GrowthModel
 
-using Enzyme
 using DataFrames
+using ForwardDiff
 using Roots
 
 include("sample_functions.jl")
@@ -25,8 +25,8 @@ GrowthModel(
 
 
 function next_K_C(model::GrowthModel, K, C)::Tuple{Float64,Float64}
-    u′(c::Float64) = autodiff(Reverse, model.u, Active, Active(c))[1][1]
-    f′(k::Float64) = autodiff(Reverse, model.f, Active, Active(k))[1][1]
+    u′(c::Float64) = ForwardDiff.derivative(model.u, c)
+    f′(k::Float64) = ForwardDiff.derivative(model.f, k)
 
     next_K = model.f(K) + (1 - model.δ) * K - C
     next_K >= 0 || return NaN, NaN
@@ -52,7 +52,7 @@ function shooting(model::GrowthModel, T::Int64, K₀::Float64, C₀::Float64)::D
     allocation
 end
 
-function find_best_allocation(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀/1e6)::DataFrame
+function find_best_allocation(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6)::DataFrame
     C_low, C_high = 0, model.f(K₀)
 
     # todo: add a loop failure exit after too many iterations
