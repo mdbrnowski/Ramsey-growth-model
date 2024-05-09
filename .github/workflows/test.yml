@@ -1,0 +1,26 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.10'
+          arch: x64
+      - uses: julia-actions/cache@v1
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1
+        with:
+          annotate: true
