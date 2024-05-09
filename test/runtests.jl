@@ -22,7 +22,7 @@ using RamseyGrowthModel, Test
     @test_throws DomainError RamseyGrowthModel.sample_f(1.0, 0.0)
     @test_throws DomainError RamseyGrowthModel.sample_f(1.0, 1.0)
 
-    f₁ = RamseyGrowthModel.sample_f(1.0, 0.5)
+    f₁ = RamseyGrowthModel.sample_f(1, 0.5)
     @test f₁(0.0) === 0.0
     @test f₁(1.0) === 1.0
     @test f₁(2.0) === sqrt(2)
