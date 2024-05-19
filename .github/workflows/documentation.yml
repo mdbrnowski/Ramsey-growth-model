@@ -6,6 +6,11 @@ on:
       - master
   pull_request:
 
+permissions:
+  actions: write
+  contents: write
+  statuses: write  # Optional, used to report documentation build statuses
+
 jobs:
   build:
     runs-on: ubuntu-latest

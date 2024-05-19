@@ -11,5 +11,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "https://github.com/mdbrnowski/Ramsey-growth-model"
+    repo = "github.com/mdbrnowski/Ramsey-growth-model.git"
 )
