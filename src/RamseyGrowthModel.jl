@@ -8,6 +8,23 @@ using Roots
 
 include("sample_functions.jl")
 
+"""
+Defines a Ramsey Growth Model.
+
+# Fields
+
+* `β` - discount factor
+* `δ` - depreciation rate on capital
+* `u` - utility function
+* `f` - production function
+
+# Constructors
+If you want to use a CRRA utility function and a Cobb-Douglas production function, use the constructor:
+
+`GrowthModel(β::Float64, δ::Float64, γ::Float64, α::Float64, A::Float64)`
+
+where `γ` is a parameter for [`sample_u`](@ref), and `α` and `A` are parameters for [`sample_f`](@ref).
+"""
 struct GrowthModel
     β::Float64   # discount factor
     δ::Float64   # depreciation rate on capital
