@@ -1,5 +1,8 @@
 # Ramsey-growth-model
 
+[![tests](https://github.com/mdbrnowski/Ramsey-growth-model/actions/workflows/test.yml/badge.svg)](https://github.com/mdbrnowski/Ramsey-growth-model/actions/workflows/test.yml)
+[![docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://mdbrnowski.github.io/Ramsey-growth-model/dev)
+
 Ramsey growth model (Ramsey-Cass-Koopmans model) implemented and solved in Julia.
 
 ## Documentation
