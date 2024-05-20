@@ -1,6 +1,12 @@
 # RamseyGrowthModel.jl
 
-Documentation for RamseyGrowthModel.jl
+## Defining Growth Model
+
+```@docs
+RamseyGrowthModel.GrowthModel
+```
+
+## Sample Functions Used in the Model
 
 ```@docs
 RamseyGrowthModel.sample_u
