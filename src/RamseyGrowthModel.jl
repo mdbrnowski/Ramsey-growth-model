@@ -69,12 +69,9 @@ function shooting(model::GrowthModel, T::Int64, K₀::Float64, C₀::Float64)::D
     allocation
 end
 
-function find_best_allocation(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6)::DataFrame
+function find_best_allocation(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6, max_iter::Int=1000)::DataFrame
     C_low, C_high = 0, model.f(K₀)
-
-    # todo: add a loop failure exit after too many iterations
-    # todo: log number of iterations before return
-    while true
+    for iter in 1:max_iter
         C_mid = (C_low + C_high) / 2
         allocation = shooting(model, T, K₀, C_mid)
         next_K = next_K_C(model, last(allocation).K, last(allocation).C)[1]
@@ -83,9 +80,12 @@ function find_best_allocation(model::GrowthModel, T::Int64, K₀::Float64; tol::
         elseif next_K > tol
             C_low = C_mid
         else
+            @info "The best allocation has been found after $iter iterations."
             return allocation
         end
     end
+
+    throw(ArgumentError("Failed to converge. Try increasing `tol` or `max_iter`."))
 end
 
 end # module RamseyGrowthModel
