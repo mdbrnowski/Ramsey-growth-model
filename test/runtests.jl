@@ -1,4 +1,5 @@
 using RamseyGrowthModel, Test
+using DataFrames
 
 @testset "sample functions" begin
 
@@ -32,4 +33,18 @@ using RamseyGrowthModel, Test
     @test f₂(0.0) === 0.0
     @test f₂(1.0) === 3.5
     @test log(f₂(exp(1))) ≈ log(3.5) + 0.7
+end
+
+@testset "solving" begin
+    model = GrowthModel(0.95, 0.02, 2.0, 0.33, 1.0)
+    K₀ = 0.2
+    allocation = RamseyGrowthModel.find_best_allocation(model, 20, K₀)
+
+    @test allocation.K[begin] === K₀
+    @test RamseyGrowthModel.next_K_C(model, allocation.K[end], allocation.C[end])[1] < 1e-6
+
+    @test_throws ArgumentError RamseyGrowthModel.find_best_allocation(model, 20, K₀, tol=1e-100)
+    @test_throws ArgumentError RamseyGrowthModel.find_best_allocation(model, 20, K₀, max_iter=5)
+
+    @test RamseyGrowthModel.find_best_allocation(model, 20, K₀, tol=0.5, max_iter=12) isa DataFrame
 end
