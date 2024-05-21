@@ -1,6 +1,6 @@
 module RamseyGrowthModel
 
-export GrowthModel
+export GrowthModel, solve
 
 using DataFrames
 using ForwardDiff
@@ -21,7 +21,9 @@ Defines a Ramsey Growth Model.
 # Constructors
 If you want to use a CRRA utility function and a Cobb-Douglas production function, use the constructor:
 
-`GrowthModel(β::Float64, δ::Float64, γ::Float64, α::Float64, A::Float64)`
+```julia
+GrowthModel(β::Float64, δ::Float64, γ::Float64, α::Float64, A::Float64)
+```
 
 where `γ` is a parameter for [`sample_u`](@ref), and `α` and `A` are parameters for [`sample_f`](@ref).
 """
@@ -69,7 +71,25 @@ function shooting(model::GrowthModel, T::Int64, K₀::Float64, C₀::Float64)::D
     allocation
 end
 
-function find_best_allocation(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6, max_iter::Int=1000)::DataFrame
+
+"""
+Returns the best possible capital and consumption allocation (as a DataFrame).
+
+```julia
+solve(model::GrowthModel, T::Int64, K₀::Float64; kwargs...)
+```
+
+# Arguments
+
+* `model` - previously defined growth model
+* `T` - considered time horizon
+* `K₀` - initial capital
+
+# Keyword Arguments
+
+The algorithm uses a binary search; if you want, you can override the default maximum number of iterations (`max_iter=1000`) or error tolerance (`tol=K₀/1e6`).
+"""
+function solve(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6, max_iter::Int=1000)::DataFrame
     C_low, C_high = 0, model.f(K₀)
     for iter in 1:max_iter
         C_mid = (C_low + C_high) / 2

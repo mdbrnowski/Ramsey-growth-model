@@ -1,9 +1,13 @@
 # RamseyGrowthModel.jl
 
-## Defining Growth Model
+## Defining and Solving a Growth Model
 
 ```@docs
-RamseyGrowthModel.GrowthModel
+GrowthModel
+```
+
+```@docs
+solve
 ```
 
 ## Sample Functions Used in the Model
