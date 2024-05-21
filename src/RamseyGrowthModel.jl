@@ -1,6 +1,6 @@
 module RamseyGrowthModel
 
-export GrowthModel
+export GrowthModel, solve
 
 using DataFrames
 using ForwardDiff
@@ -69,7 +69,7 @@ function shooting(model::GrowthModel, T::Int64, K₀::Float64, C₀::Float64)::D
     allocation
 end
 
-function find_best_allocation(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6, max_iter::Int=1000)::DataFrame
+function solve(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6, max_iter::Int=1000)::DataFrame
     C_low, C_high = 0, model.f(K₀)
     for iter in 1:max_iter
         C_mid = (C_low + C_high) / 2

@@ -38,13 +38,16 @@ end
 @testset "solving" begin
     model = GrowthModel(0.95, 0.02, 2.0, 0.33, 1.0)
     K₀ = 0.2
-    allocation = RamseyGrowthModel.find_best_allocation(model, 20, K₀)
+    info_pattern = r"^The best allocation has been found after \d+ iterations\.$"
+    allocation = @test_logs (:info, info_pattern) solve(model, 20, K₀)
 
     @test allocation.K[begin] === K₀
     @test RamseyGrowthModel.next_K_C(model, allocation.K[end], allocation.C[end])[1] < 1e-6
 
-    @test_throws ArgumentError RamseyGrowthModel.find_best_allocation(model, 20, K₀, tol=1e-100)
-    @test_throws ArgumentError RamseyGrowthModel.find_best_allocation(model, 20, K₀, max_iter=5)
+    @test_throws ArgumentError solve(model, 20, K₀, tol=1e-100)
+    @test_throws ArgumentError solve(model, 20, K₀, max_iter=5)
 
-    @test RamseyGrowthModel.find_best_allocation(model, 20, K₀, tol=0.5, max_iter=12) isa DataFrame
+    @test (
+        @test_logs (:info, info_pattern) solve(model, 20, K₀, tol=0.5, max_iter=12)
+    ) isa DataFrame
 end
