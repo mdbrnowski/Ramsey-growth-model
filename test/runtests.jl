@@ -42,7 +42,7 @@ end
     allocation = @test_logs (:info, info_pattern) solve(model, 20, K₀)
 
     @test allocation.K[begin] === K₀
-    @test RamseyGrowthModel.next_K_C(model, allocation.K[end], allocation.C[end])[1] < 1e-6
+    @test RamseyGrowthModel.next_K_C(model, allocation.K[end], allocation.C[end])[1] < K₀ * 1e-6
 
     @test_throws ArgumentError solve(model, 20, K₀, tol=1e-100)
     @test_throws ArgumentError solve(model, 20, K₀, max_iter=5)
