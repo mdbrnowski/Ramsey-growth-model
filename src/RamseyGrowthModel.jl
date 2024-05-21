@@ -19,33 +19,45 @@ Defines a Ramsey Growth Model.
 * `f` - production function
 
 # Constructors
-If you want to use a CRRA utility function and a Cobb-Douglas production function, use the constructor:
-
+If you want to use a CRRA utility function and a Cobb-Douglas production function, use constructor
 ```julia
-GrowthModel(β::Float64, δ::Float64, γ::Float64, α::Float64, A::Float64)
+GrowthModel(β::Real, δ::Real, γ::Real, α::Real, A::Real)
 ```
-
 where `γ` is a parameter for [`sample_u`](@ref), and `α` and `A` are parameters for [`sample_f`](@ref).
+
+However, if you have some other utility and production functions you want to use, constructor
+```julia
+GrowthModel(β::Real, δ::Real, u::Function, f::Function)
+```
+is also avaible.
+
 """
-struct GrowthModel
-    β::Float64   # discount factor
-    δ::Float64   # depreciation rate on capital
-    u::Function   # utility function
-    f::Function   # production function
+struct GrowthModel{F_u<:Function,F_f<:Function}
+    β::Float64    # discount factor
+    δ::Float64    # depreciation rate on capital
+    u::F_u        # utility function
+    f::F_f        # production function
 end
 
 GrowthModel(
-    β::Float64,
-    δ::Float64,
-    γ::Float64,  # coefficient of relative risk aversion
-    α::Float64,  # return to capital per capita
-    A::Float64   # technology
-) = GrowthModel(β, δ, sample_u(γ), sample_f(A, α))
+    β::Real,
+    δ::Real,
+    u::Function,
+    f::Function,
+) = GrowthModel(Float64(β), Float64(δ), u, f)
+
+GrowthModel(
+    β::Real,
+    δ::Real,
+    γ::Real,  # coefficient of relative risk aversion
+    α::Real,  # return to capital per capita
+    A::Real   # technology
+) = GrowthModel(Float64(β), Float64(δ), sample_u(γ), sample_f(A, α))
 
 
-function next_K_C(model::GrowthModel, K, C)::Tuple{Float64,Float64}
-    u′(c::Float64) = ForwardDiff.derivative(model.u, c)
-    f′(k::Float64) = ForwardDiff.derivative(model.f, k)
+function next_K_C(model::GrowthModel, K, C)::Tuple{Real,Real}
+    u′(c::Real) = ForwardDiff.derivative(model.u, c)
+    f′(k::Real) = ForwardDiff.derivative(model.f, k)
 
     next_K = model.f(K) + (1 - model.δ) * K - C
     next_K >= 0 || return NaN, NaN
@@ -53,7 +65,7 @@ function next_K_C(model::GrowthModel, K, C)::Tuple{Float64,Float64}
     next_K, next_C
 end
 
-function shooting(model::GrowthModel, T::Int64, K₀::Float64, C₀::Float64)::DataFrame
+function shooting(model::GrowthModel, T::Integer, K₀::Real, C₀::Real)::DataFrame
     allocation = DataFrame(
         t=0:T,
         K=fill(NaN, T + 1),
@@ -76,7 +88,7 @@ end
 Returns the best possible capital and consumption allocation (as a DataFrame).
 
 ```julia
-solve(model::GrowthModel, T::Int64, K₀::Float64; kwargs...)
+solve(model::GrowthModel, T::Integer, K₀::Real; kwargs...)
 ```
 
 # Arguments
@@ -89,7 +101,9 @@ solve(model::GrowthModel, T::Int64, K₀::Float64; kwargs...)
 
 The algorithm uses a binary search; if you want, you can override the default maximum number of iterations (`max_iter=1000`) or error tolerance (`tol=K₀/1e6`).
 """
-function solve(model::GrowthModel, T::Int64, K₀::Float64; tol::Float64=K₀ / 1e6, max_iter::Int=1000)::DataFrame
+function solve(model::GrowthModel, T::Integer, K₀::Real; tol::Real=K₀ / 1e6, max_iter::Integer=1000)::DataFrame
+    K₀ > 0 || throw(DomainError("Initial capital `K₀` should be positive."))
+    T > 0 || throw(DomainError("Time horizon `T` should be positive."))
     C_low, C_high = 0, model.f(K₀)
     for iter in 1:max_iter
         C_mid = (C_low + C_high) / 2
