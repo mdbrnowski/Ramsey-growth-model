@@ -19,17 +19,17 @@ using DataFrames
     @test u₃(1) === 1.0
     @test u₃(exp(1)) === 2.0
 
-    @test_throws DomainError RamseyGrowthModel.sample_f(0.0, 0.5)
-    @test_throws DomainError RamseyGrowthModel.sample_f(1.0, 0.0)
+    @test_throws DomainError RamseyGrowthModel.sample_f(0.5, 0.0)
+    @test_throws DomainError RamseyGrowthModel.sample_f(0.0, 1.0)
     @test_throws DomainError RamseyGrowthModel.sample_f(1.0, 1.0)
 
-    f₁ = RamseyGrowthModel.sample_f(1, 0.5)
+    f₁ = RamseyGrowthModel.sample_f(0.5, 1)
     @test f₁(0) === 0.0
     @test f₁(1) === 1.0
     @test f₁(2.0) === sqrt(2)
     @test f₁(4.0) === 2.0
 
-    f₂ = RamseyGrowthModel.sample_f(3.5, 0.7)
+    f₂ = RamseyGrowthModel.sample_f(0.7, 3.5)
     @test f₂(0) === 0.0
     @test f₂(1.0) === 3.5
     @test log(f₂(exp(1))) ≈ log(3.5) + 0.7
