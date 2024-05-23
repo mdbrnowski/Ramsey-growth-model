@@ -52,7 +52,7 @@ GrowthModel(
     γ::Real,  # coefficient of relative risk aversion
     α::Real,  # return to capital per capita
     A::Real   # technology
-) = GrowthModel(Float64(β), Float64(δ), sample_u(γ), sample_f(A, α))
+) = GrowthModel(Float64(β), Float64(δ), sample_u(γ), sample_f(α, A))
 
 
 function next_K_C(model::GrowthModel, K, C)::Tuple{Real,Real}

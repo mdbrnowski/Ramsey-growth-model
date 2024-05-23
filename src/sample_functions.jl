@@ -17,13 +17,13 @@ function sample_u(γ::Real)::Function
 end
 
 @doc raw"""
-Returns per-capita Cobb-Douglas production function ``f(k)`` with given ``A`` and ``α``.
+Returns per-capita Cobb-Douglas production function ``f(k)`` with given ``α`` and ``A``.
 
 ```math
 f(k) = A \cdot k^α
 ```
 """
-function sample_f(A::Real, α::Real)::Function
+function sample_f(α::Real, A::Real)::Function
     0 < α < 1 || throw(DomainError("α should be in range (0, 1)."))
     0 < A || throw(DomainError("A should grater than 0."))
     k -> A * k ^ α
