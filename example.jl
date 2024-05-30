@@ -14,18 +14,12 @@ end
 using Plots, DataFrames
 
 # ╔═╡ 9acaaaf8-fc92-487b-9c37-40e640b9a6c4
-my_model = GrowthModel(0.95, 0.02, 2.0, 0.33, 1.0)
+my_model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1.0)
 
 # ╔═╡ 500630d6-97ff-4266-ab70-6f3889097314
 function plot_allocation(allocation::DataFrame)
 	plot(allocation.t, allocation.K, xlabel="t", ylabel="K_t", label="capital")
 end
-
-# ╔═╡ 3d8734f2-3512-4852-b74b-6c832b471aec
-allocation = RamseyGrowthModel.shooting(my_model, 20, 0.2, 0.3)
-
-# ╔═╡ ba422b11-6ccc-46dd-bced-93f5dbd6f403
-plot_allocation(allocation)
 
 # ╔═╡ 7354f6ed-fb29-4247-90c7-7718a3a395ff
 best_allocation = solve(my_model, 20, 0.2)
@@ -1174,8 +1168,6 @@ version = "1.4.1+1"
 # ╠═09f76afa-5380-4aea-97cb-3a7c8bd8c860
 # ╠═9acaaaf8-fc92-487b-9c37-40e640b9a6c4
 # ╠═500630d6-97ff-4266-ab70-6f3889097314
-# ╠═3d8734f2-3512-4852-b74b-6c832b471aec
-# ╠═ba422b11-6ccc-46dd-bced-93f5dbd6f403
 # ╠═7354f6ed-fb29-4247-90c7-7718a3a395ff
 # ╠═e527fc57-60e0-44dc-9943-bc9095a2166f
 # ╟─00000000-0000-0000-0000-000000000001

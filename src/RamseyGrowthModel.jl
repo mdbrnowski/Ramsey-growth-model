@@ -23,7 +23,7 @@ If you want to use a CRRA utility function and a Cobb-Douglas production functio
 ```julia
 GrowthModel(β::Real, δ::Real, γ::Real, α::Real, A::Real)
 ```
-where `γ` is a parameter for [`sample_u`](@ref), and `α` and `A` are parameters for [`sample_f`](@ref).
+where `γ` is a parameter for [`RamseyGrowthModel.sample_u`](@ref), and `α` and `A` are parameters for [`RamseyGrowthModel.sample_f`](@ref).
 
 However, if you have some other utility and production functions you want to use, constructor
 ```julia
@@ -105,6 +105,12 @@ function solve(model::GrowthModel, T::Integer, K₀::Real; tol::Real=K₀ / 1e6,
     K₀ > 0 || throw(DomainError("Initial capital `K₀` should be positive."))
     T > 0 || throw(DomainError("Time horizon `T` should be positive."))
     C_low, C_high = 0, model.f(K₀)
+
+    if last(shooting(model, T + 1, K₀, C_high)).K > 0
+        @info "Your initial capital is very high; the best allocation has been found using the highest possible initial consumption."
+        return shooting(model, T, K₀, C_high)
+    end
+
     for iter in 1:max_iter
         C_mid = (C_low + C_high) / 2
         allocation = shooting(model, T, K₀, C_mid)

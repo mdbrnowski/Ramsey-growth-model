@@ -50,8 +50,6 @@ using DataFrames
         @test_throws DomainError solve(model, 20, 0)
         @test_throws DomainError solve(model, -1, K₀)
         @test_throws DomainError solve(model, 0, K₀)
-        @test_throws ArgumentError solve(model, 20, K₀, tol=1e-100)
-        @test_throws ArgumentError solve(model, 20, K₀, max_iter=5)
 
         # check if both keyword arguments work
         @test (
@@ -60,8 +58,29 @@ using DataFrames
 
         # check if all supported types work
         @test (
-            @test_logs (:info, info_pattern) solve(GrowthModel(9//10, 5//100, 2, 4//10, 1), 20, 1)
+            @test_logs (:info, info_pattern) solve(GrowthModel(9 // 10, 5 // 100, 2, 4 // 10, 1), 20, 1)
         ) isa DataFrame
+
+        @test_throws ArgumentError solve(model, 20, K₀, tol=1e-100)
+        @test_throws ArgumentError solve(model, 20, K₀, max_iter=5)
+
+        @testset "high initial capital" begin
+            K₀ = 9.9
+            model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1)
+            model_tech = GrowthModel(0.95, 0.02, 2.0, 0.3, 100)
+
+            @test (
+                @test_logs (:info, r"capital is very high") solve(model, 20, K₀)
+            ) isa DataFrame
+
+            @test (
+                @test_logs (:info, info_pattern) solve(model, 200, K₀)  # longer time horizon
+            ) isa DataFrame
+
+            @test (
+                @test_logs (:info, info_pattern) solve(model_tech, 20, K₀)  # better techonology
+            ) isa DataFrame
+        end
     end
 
 end
