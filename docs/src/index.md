@@ -10,8 +10,8 @@ my_model = GrowthModel(
     0.95,  # discount factor
     0.02,  # depreciation rate on capital
     2.0,   # coefficient of relative risk aversion
-    0.30,  # return to capital per capita
-    1.0,   # technology
+    0.3,   # return to capital per capita
+    1,     # technology
 )
 
 allocation = solve(
