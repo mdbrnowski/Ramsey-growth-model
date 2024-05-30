@@ -19,7 +19,7 @@ my_model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1.0)
 # ╔═╡ 500630d6-97ff-4266-ab70-6f3889097314
 function plot_allocation(allocation::DataFrame, kss::Union{Real,Nothing}=nothing)
 	p = plot(allocation.t, allocation.K, xlabel="t", ylabel="K_t", label="capital")
-	if kss != nothing
+	if !isnothing(kss)
 		hline!(p[1], [kss], label="steady state capital", linestyle=:dash)
 	end
 	p
@@ -31,7 +31,6 @@ best_allocation = solve(my_model, 20, 0.2)
 # ╔═╡ e527fc57-60e0-44dc-9943-bc9095a2166f
 plot_allocation(best_allocation)
 
-# ╔═╡ 41792cc7-80d5-4689-ab54-d94e76eb05c7
 
 
 # ╔═╡ 69167b33-034d-480b-9a06-193c11c61c49
