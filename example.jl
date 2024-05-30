@@ -17,8 +17,12 @@ using Plots, DataFrames
 my_model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1.0)
 
 # ╔═╡ 500630d6-97ff-4266-ab70-6f3889097314
-function plot_allocation(allocation::DataFrame)
-	plot(allocation.t, allocation.K, xlabel="t", ylabel="K_t", label="capital")
+function plot_allocation(allocation::DataFrame, kss::Union{Real,Nothing}=nothing)
+	p = plot(allocation.t, allocation.K, xlabel="t", ylabel="K_t", label="capital")
+	if !isnothing(kss)
+		hline!(p[1], [kss], label="steady state capital", linestyle=:dash)
+	end
+	p
 end
 
 # ╔═╡ 7354f6ed-fb29-4247-90c7-7718a3a395ff
@@ -26,6 +30,17 @@ best_allocation = solve(my_model, 20, 0.2)
 
 # ╔═╡ e527fc57-60e0-44dc-9943-bc9095a2166f
 plot_allocation(best_allocation)
+
+
+
+# ╔═╡ 69167b33-034d-480b-9a06-193c11c61c49
+kss = RamseyGrowthModel.steady_state_K(my_model)
+
+# ╔═╡ 77398e1c-55a3-4ae7-868a-cdb7cdf2a8f2
+kss_best_allocation = solve(my_model, 100, kss)
+
+# ╔═╡ 47943756-3c8d-4241-ad2a-e02e55965685
+plot_allocation(kss_best_allocation, kss)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1170,5 +1185,9 @@ version = "1.4.1+1"
 # ╠═500630d6-97ff-4266-ab70-6f3889097314
 # ╠═7354f6ed-fb29-4247-90c7-7718a3a395ff
 # ╠═e527fc57-60e0-44dc-9943-bc9095a2166f
+# ╠═41792cc7-80d5-4689-ab54-d94e76eb05c7
+# ╠═69167b33-034d-480b-9a06-193c11c61c49
+# ╠═77398e1c-55a3-4ae7-868a-cdb7cdf2a8f2
+# ╠═47943756-3c8d-4241-ad2a-e02e55965685
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
