@@ -20,7 +20,7 @@ my_model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1.0)
 function plot_allocation(allocation::DataFrame, kss::Union{Real,Nothing}=nothing)
 	p = plot(allocation.t, allocation.K, xlabel="t", ylabel="K_t", label="capital")
 	if kss != nothing
-		hline!(p[1], [kss], label="steady state capital")
+		hline!(p[1], [kss], label="steady state capital", linestyle=:dash)
 	end
 	p
 end
