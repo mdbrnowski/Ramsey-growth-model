@@ -6,7 +6,7 @@ using RamseyGrowthModel
 
 makedocs(
     sitename = "RamseyGrowthModel.jl",
-    format = Documenter.HTML(ansicolor=true),
+    format = Documenter.HTML(),
     modules = [RamseyGrowthModel]
 )
 
