@@ -83,6 +83,10 @@ function shooting(model::GrowthModel, T::Integer, K₀::Real, C₀::Real)::DataF
     allocation
 end
 
+function steady_state_K(model::GrowthModel)::Real
+    f′(k::Real) = ForwardDiff.derivative(model.f, k)
+    find_zero(x -> f′(x) - 1/model.β + 1 - model.δ, (0, Inf64))
+end
 
 """
 Returns the best possible capital and consumption allocation (as a DataFrame).
