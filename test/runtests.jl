@@ -1,4 +1,4 @@
-using RamseyGrowthModel, Test
+using RamseyGrowthModel, Test, Logging
 using DataFrames
 
 @testset verbose = true "RamseyGrowthModel" begin
@@ -50,6 +50,7 @@ using DataFrames
         @test_throws DomainError solve(model, 20, 0)
         @test_throws DomainError solve(model, -1, K₀)
         @test_throws DomainError solve(model, 0, K₀)
+        @test_throws DomainError solve(model, 3.14, K₀)
 
         # check if both keyword arguments work
         @test (
@@ -80,6 +81,24 @@ using DataFrames
             @test (
                 @test_logs (:info, info_pattern) solve(model_tech, 20, K₀)  # better techonology
             ) isa DataFrame
+        end
+
+        @testset "infinite time" begin
+            model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1)
+            test_logger = TestLogger()
+
+            with_logger(test_logger) do
+                solve(model, Inf, 3)
+                solve(model, Inf, 100)
+            end 
+
+            @test occursin(r"T specified as infinity;", test_logger.logs[1].message)
+            @test occursin(info_pattern, test_logger.logs[2].message)
+
+            @test occursin(r"T specified as infinity;", test_logger.logs[3].message)
+            @test occursin(r"capital is very high", test_logger.logs[4].message)
+       
+            @test_throws DomainError solve(model, -Inf, 3)
         end
     end
 
