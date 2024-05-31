@@ -105,7 +105,6 @@ solve(model::GrowthModel, T::Integer, K₀::Real; kwargs...)
 
 The algorithm uses a binary search; if you want, you can override the default maximum number of iterations (`max_iter=1000`) or error tolerance (`tol=K₀/1e6`).
 """
-
 function solve(model::GrowthModel, T::Union{Float64, Integer}, K₀::Real; tol::Real=K₀ / 1e6, max_iter::Integer=1000)::DataFrame
     K₀ > 0 || throw(DomainError("Initial capital `K₀` should be positive."))
     T > 0 || throw(DomainError("Time horizon `T` should be positive."))
