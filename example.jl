@@ -41,7 +41,7 @@ kss_best_allocation = solve(my_model, 100, kss)
 plot_allocation(kss_best_allocation, kss)
 
 # ╔═╡ 97b50f22-b883-47fe-a4f1-7c3d8d435d82
-infinite_best_allocation = solve(my_model, Inf64, 3.1)
+infinite_best_allocation = solve(my_model, Inf, 3.1)
 
 # ╔═╡ e67e0207-8d63-4137-9d38-9f60a10091a5
 plot_allocation(infinite_best_allocation, kss)

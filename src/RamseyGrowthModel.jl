@@ -105,7 +105,7 @@ solve(model::GrowthModel, T::Integer, K₀::Real; kwargs...)
 
 The algorithm uses a binary search; if you want, you can override the default maximum number of iterations (`max_iter=1000`) or error tolerance (`tol=K₀/1e6`).
 """
-function solve(model::GrowthModel, T::Union{Float64, Integer}, K₀::Real; tol::Real=K₀ / 1e6, max_iter::Integer=1000)::DataFrame
+function solve(model::GrowthModel, T::Union{Integer, typeof(Inf)}, K₀::Real; tol::Real=K₀ / 1e6, max_iter::Integer=1000)::DataFrame
     K₀ > 0 || throw(DomainError("Initial capital `K₀` should be positive."))
     T > 0 || throw(DomainError("Time horizon `T` should be positive."))
     C_low, C_high = 0, model.f(K₀)
@@ -118,9 +118,8 @@ function solve(model::GrowthModel, T::Union{Float64, Integer}, K₀::Real; tol::
         K_ter = steady_state_K(model)
     end
 
-    if T isa Float64
-        @info "Given T is a floating point number; rounding T to nearest smallest integer."
-        T = floor(Integer, T)
+    if !isa(T, Integer)
+        throw(DomainError("Time horizon `T` should be an Integer."))
     end
 
     if last(shooting(model, T + 1, K₀, C_high)).K > 0
