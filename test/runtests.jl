@@ -50,6 +50,8 @@ using DataFrames
         @test_throws DomainError solve(model, 20, 0)
         @test_throws DomainError solve(model, -1, K₀)
         @test_throws DomainError solve(model, 0, K₀)
+        @test_throws DomainError solve(model, 3.14, K₀)
+        @test_throws DomainError solve(model, -Inf, K₀)
 
         # check if both keyword arguments work
         @test (
@@ -80,6 +82,13 @@ using DataFrames
             @test (
                 @test_logs (:info, info_pattern) solve(model_tech, 20, K₀)  # better techonology
             ) isa DataFrame
+        end
+
+        @testset "infinite time" begin
+            model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1)
+
+            @test_logs (:info, r"T specified as infinity;") (:info, info_pattern) solve(model, Inf, 3)
+            @test_logs (:info, r"T specified as infinity;") (:info, r"capital is very high") solve(model, Inf, 100)
         end
     end
 
