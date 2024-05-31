@@ -105,28 +105,49 @@ solve(model::GrowthModel, T::Integer, K₀::Real; kwargs...)
 
 The algorithm uses a binary search; if you want, you can override the default maximum number of iterations (`max_iter=1000`) or error tolerance (`tol=K₀/1e6`).
 """
-function solve(model::GrowthModel, T::Integer, K₀::Real; tol::Real=K₀ / 1e6, max_iter::Integer=1000)::DataFrame
+
+function solve(model::GrowthModel, T::Union{Float64, Integer}, K₀::Real; tol::Real=K₀ / 1e6, max_iter::Integer=1000)::DataFrame
     K₀ > 0 || throw(DomainError("Initial capital `K₀` should be positive."))
     T > 0 || throw(DomainError("Time horizon `T` should be positive."))
     C_low, C_high = 0, model.f(K₀)
+
+    K_ter = 0
+
+    if isinf(T)
+        @info "T specified as infinity; setting T to 100 for calculation and plotting purposes."
+        T = 100
+        K_ter = steady_state_K(model)
+    end
+
+    if T isa Float64
+        @info "Given T is a floating point number; rounding T to nearest smallest integer."
+        T = floor(Integer, T)
+    end
 
     if last(shooting(model, T + 1, K₀, C_high)).K > 0
         @info "Your initial capital is very high; the best allocation has been found using the highest possible initial consumption."
         return shooting(model, T, K₀, C_high)
     end
 
+    
     for iter in 1:max_iter
         C_mid = (C_low + C_high) / 2
         allocation = shooting(model, T, K₀, C_mid)
         next_K = next_K_C(model, last(allocation).K, last(allocation).C)[1]
-        if isnan(next_K)
-            C_high = C_mid
-        elseif next_K > tol
-            C_low = C_mid
-        else
+
+        error = next_K - K_ter
+
+        if abs(error) < tol
             @info "The best allocation has been found after $iter iterations."
             return allocation
         end
+
+        if error > 0
+            C_low = C_mid
+        else
+            C_high = C_mid
+        end
+        
     end
 
     throw(ArgumentError("Failed to converge. Try increasing `tol` or `max_iter`."))

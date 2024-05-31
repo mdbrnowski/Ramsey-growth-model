@@ -42,6 +42,12 @@ kss_best_allocation = solve(my_model, 100, kss)
 # ╔═╡ 47943756-3c8d-4241-ad2a-e02e55965685
 plot_allocation(kss_best_allocation, kss)
 
+# ╔═╡ 97b50f22-b883-47fe-a4f1-7c3d8d435d82
+infinite_best_allocation = solve(my_model, Inf64, 3.1)
+
+# ╔═╡ e67e0207-8d63-4137-9d38-9f60a10091a5
+plot_allocation(infinite_best_allocation, kss)
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -1185,9 +1191,10 @@ version = "1.4.1+1"
 # ╠═500630d6-97ff-4266-ab70-6f3889097314
 # ╠═7354f6ed-fb29-4247-90c7-7718a3a395ff
 # ╠═e527fc57-60e0-44dc-9943-bc9095a2166f
-# ╠═41792cc7-80d5-4689-ab54-d94e76eb05c7
 # ╠═69167b33-034d-480b-9a06-193c11c61c49
 # ╠═77398e1c-55a3-4ae7-868a-cdb7cdf2a8f2
 # ╠═47943756-3c8d-4241-ad2a-e02e55965685
+# ╠═97b50f22-b883-47fe-a4f1-7c3d8d435d82
+# ╠═e67e0207-8d63-4137-9d38-9f60a10091a5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
