@@ -31,8 +31,6 @@ best_allocation = solve(my_model, 20, 0.2)
 # ╔═╡ e527fc57-60e0-44dc-9943-bc9095a2166f
 plot_allocation(best_allocation)
 
-
-
 # ╔═╡ 69167b33-034d-480b-9a06-193c11c61c49
 kss = RamseyGrowthModel.steady_state_K(my_model)
 
