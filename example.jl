@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 09f76afa-5380-4aea-97cb-3a7c8bd8c860
 begin
 	push!(LOAD_PATH, pwd())
@@ -11,25 +21,68 @@ begin
 end
 
 # ╔═╡ be3a9c76-a806-419f-b688-d060cfed11f4
-using Plots, DataFrames
+using PlutoUI, Plots, DataFrames
+
+# ╔═╡ 0fba4001-7e4b-43de-ae53-4b31f9a2e7e2
+md"""
+# Ramsey Growth Model - examples
+"""
+
+# ╔═╡ 0bdca6cf-82ad-4457-9d3c-d66f2d5ad5c6
+md"""
+In this notebook, we gathered some interesting capital and consumption distributions, along with some interactive examples.
+"""
+
+# ╔═╡ 98a54db0-713a-4b0b-8708-3b836bac715b
+md"""
+For demonstration purposes, two plotting functions have been declared.
+"""
+
+# ╔═╡ 500630d6-97ff-4266-ab70-6f3889097314
+function plot_capital(allocation::DataFrame, kss::Union{Real,Nothing}=nothing)
+	capital = plot(allocation.t, allocation.K, xlabel="t", ylabel="Kₜ", label="capital")
+	if !isnothing(kss)
+		hline!(capital[1], [kss], label="steady state capital", linestyle=:dash)
+	end
+	capital
+end
+
+# ╔═╡ 9e450a04-bd36-46a6-95d9-c35252093bb8
+function plot_consumption(allocation::DataFrame)
+	plot(allocation.t, allocation.C, xlabel="t", ylabel="Cₜ", label="consumption")
+end
+
+# ╔═╡ bd66627e-2565-4a79-99be-c1d01f48c79c
+md"""
+-------------------
+Before running the simulation with different parameters, an instance of the model needs to be set up.
+"""
 
 # ╔═╡ 9acaaaf8-fc92-487b-9c37-40e640b9a6c4
 my_model = GrowthModel(0.95, 0.02, 2.0, 0.3, 1.0)
 
-# ╔═╡ 500630d6-97ff-4266-ab70-6f3889097314
-function plot_allocation(allocation::DataFrame, kss::Union{Real,Nothing}=nothing)
-	p = plot(allocation.t, allocation.K, xlabel="t", ylabel="K_t", label="capital")
-	if !isnothing(kss)
-		hline!(p[1], [kss], label="steady state capital", linestyle=:dash)
-	end
-	p
-end
+# ╔═╡ b83288f7-0817-4282-aa48-d6c12872dc0c
+md"""
+#### Example 1: finite ``T``
+---
+This is the most realistic and commonly analized simulation of RCK model. In this variant, tendencies of the capital and consumption, namely ``$K\rightarrow0$`` and ``$C\rightarrow\infty$`` can be observed very well.
+"""
 
 # ╔═╡ 7354f6ed-fb29-4247-90c7-7718a3a395ff
 best_allocation = solve(my_model, 20, 0.2)
 
 # ╔═╡ e527fc57-60e0-44dc-9943-bc9095a2166f
-plot_allocation(best_allocation)
+plot_capital(best_allocation)
+
+# ╔═╡ 8739cc91-440a-4150-98ac-4ab62614528b
+plot_consumption(best_allocation)
+
+# ╔═╡ a44866e1-cccc-42c4-a6ab-a09ed770521c
+md"""
+#### Example 2: steady state capital as ``K_0``
+---
+With the increase of time ``T``, a special property of the capital function can be observed. As the time increases, the planner pushes the capital to a fixed value called *steady state capital*. When this value is set as the initial capital, values of capital function are constant and decrease at the final stages of the simulation.
+"""
 
 # ╔═╡ 69167b33-034d-480b-9a06-193c11c61c49
 kss = RamseyGrowthModel.steady_state_K(my_model)
@@ -38,23 +91,102 @@ kss = RamseyGrowthModel.steady_state_K(my_model)
 kss_best_allocation = solve(my_model, 100, kss)
 
 # ╔═╡ 47943756-3c8d-4241-ad2a-e02e55965685
-plot_allocation(kss_best_allocation, kss)
+plot_capital(kss_best_allocation, kss)
+
+# ╔═╡ a043b75e-3a41-4614-85b5-a752f994cf25
+plot_consumption(kss_best_allocation)
+
+# ╔═╡ b12971ba-373b-4abd-b2db-63cb1bd2a407
+md"""
+#### Example 3: ``T=\infty``
+---
+For this case, it is not possible to depict the functions of capital and consumption accurately. However, it is possible to predict the behaviour of these functions for a certain finite time period, which is also illustrated in the graphs below.
+"""
 
 # ╔═╡ 97b50f22-b883-47fe-a4f1-7c3d8d435d82
 infinite_best_allocation = solve(my_model, Inf, 3.1)
 
 # ╔═╡ e67e0207-8d63-4137-9d38-9f60a10091a5
-plot_allocation(infinite_best_allocation, kss)
+plot_capital(infinite_best_allocation, kss)
+
+# ╔═╡ a2d0128d-79fc-499b-a5fb-1cb204976b8c
+plot_consumption(infinite_best_allocation)
+
+# ╔═╡ 0c65bcd5-1636-4aff-a975-156e53e9def4
+md"""
+#### Example 4: custom example
+---
+Here we provide a playground, where users can select their own model and simulation parameters and visualize the results.
+"""
+
+# ╔═╡ 8eb1e7d2-12ff-4d8d-bee8-71d4c6da11cf
+md"""
+Model parameters consist of:
+- discount factor ``\beta=`` $(@bind β Scrubbable(0.1:0.1:0.9, default=0.9))
+- depreciation rate of capital ``\delta=`` $(@bind δ Scrubbable(0.1:0.1:0.9, default=0.1))
+- coefficient of relative risk aversion ``\gamma=`` $(@bind γ Scrubbable(0.1:0.1:10, default=2.0))
+- return to capital per capita ``\alpha=`` $(@bind α Scrubbable(0.1:0.1:0.9, default=0.3))
+- technology ``A=`` $(@bind A Scrubbable(0.1:0.1:10, default=1.0))
+"""
+
+# ╔═╡ b2745ea1-a9fc-4671-89b5-756c185321de
+custom_model = GrowthModel(β, δ, γ, α, A)
+
+# ╔═╡ 9d0e6b0a-a54a-4af1-9950-8307ef1e25c4
+md"""
+----
+"""
+
+# ╔═╡ 283b6890-89ce-4c57-ac4f-bd5e17ea1329
+md"""
+``T``: 
+$(@bind t html"<input type='range' style='width: 80%'/>")
+"""
+
+# ╔═╡ e0ca1162-7e30-4d61-b7c1-e8b31dd46cd3
+md"""
+``T=`` $(t)
+"""
+
+# ╔═╡ 9b633282-cbed-44b6-8d6a-70e0e740f1df
+md"""
+----
+"""
+
+# ╔═╡ ac4f0393-b3ba-4b86-8415-12aa2e756995
+md"""
+``K_0``: 
+$(@bind k_0 html"<input type='range' style='width: 80%'/>")
+"""
+
+# ╔═╡ 83ce4f65-6aae-4484-b11e-73194d5e4271
+md"""
+``K_0=`` $(k_0/10)
+"""
+
+# ╔═╡ 460d0d45-c225-476c-bad5-c8cca105c06e
+custom_allocation = solve(custom_model, t, k_0/10)
+
+# ╔═╡ 8214f1e7-f8ad-44ef-9be7-ec5b930e399d
+custom_kss = RamseyGrowthModel.steady_state_K(custom_model)
+
+# ╔═╡ f4e715da-809f-42e5-a948-f8d4de5e297e
+plot_capital(custom_allocation, custom_kss)
+
+# ╔═╡ cf74f673-230a-4135-8c67-48d6350346c7
+plot_consumption(custom_allocation)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 DataFrames = "~1.6.1"
 Plots = "~1.40.4"
+PlutoUI = "~0.7.59"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -63,7 +195,13 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.3"
 manifest_format = "2.0"
-project_hash = "e3d0afcca92f74228450b5706972000456b3fc8d"
+project_hash = "71e953270420a5635c6d83b331f42024dcc31b50"
+
+[[deps.AbstractPlutoDingetjes]]
+deps = ["Pkg"]
+git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
+uuid = "6e696c72-6542-2067-7265-42206c756150"
+version = "1.3.2"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -321,6 +459,24 @@ git-tree-sha1 = "129acf094d168394e80ee1dc4bc06ec835e510a3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "2.8.1+1"
 
+[[deps.Hyperscript]]
+deps = ["Test"]
+git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
+uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
+version = "0.0.5"
+
+[[deps.HypertextLiteral]]
+deps = ["Tricks"]
+git-tree-sha1 = "7134810b1afce04bbc1045ca1985fbe81ce17653"
+uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
+version = "0.9.5"
+
+[[deps.IOCapture]]
+deps = ["Logging", "Random"]
+git-tree-sha1 = "8b72179abc660bfab5e28472e019392b97d0985c"
+uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
+version = "0.2.4"
+
 [[deps.InlineStrings]]
 deps = ["Parsers"]
 git-tree-sha1 = "9cc2baf75c6d09f9da536ddf58eb2f29dedaf461"
@@ -517,6 +673,11 @@ git-tree-sha1 = "c1dd6d7978c12545b4179fb6153b9250c96b0075"
 uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
 version = "1.0.3"
 
+[[deps.MIMEs]]
+git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
+uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
+version = "0.1.4"
+
 [[deps.MacroTools]]
 deps = ["Markdown", "Random"]
 git-tree-sha1 = "2fa9ee3e63fd3a4f7a9a4f4744a52f4856de82df"
@@ -663,6 +824,12 @@ version = "1.40.4"
     IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
     ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
+[[deps.PlutoUI]]
+deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
+git-tree-sha1 = "ab55ee1510ad2af0ff674dbcced5e94921f867a9"
+uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+version = "0.7.59"
 
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
@@ -847,6 +1014,11 @@ weakdeps = ["Random", "Test"]
 
     [deps.TranscodingStreams.extensions]
     TestExt = ["Test", "Random"]
+
+[[deps.Tricks]]
+git-tree-sha1 = "eae1bb484cd63b36999ee58be2de6c178105112f"
+uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
+version = "0.1.8"
 
 [[deps.URIs]]
 git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
@@ -1183,16 +1355,40 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
+# ╟─0fba4001-7e4b-43de-ae53-4b31f9a2e7e2
+# ╟─0bdca6cf-82ad-4457-9d3c-d66f2d5ad5c6
 # ╠═be3a9c76-a806-419f-b688-d060cfed11f4
 # ╠═09f76afa-5380-4aea-97cb-3a7c8bd8c860
-# ╠═9acaaaf8-fc92-487b-9c37-40e640b9a6c4
+# ╟─98a54db0-713a-4b0b-8708-3b836bac715b
 # ╠═500630d6-97ff-4266-ab70-6f3889097314
+# ╠═9e450a04-bd36-46a6-95d9-c35252093bb8
+# ╟─bd66627e-2565-4a79-99be-c1d01f48c79c
+# ╠═9acaaaf8-fc92-487b-9c37-40e640b9a6c4
+# ╟─b83288f7-0817-4282-aa48-d6c12872dc0c
 # ╠═7354f6ed-fb29-4247-90c7-7718a3a395ff
 # ╠═e527fc57-60e0-44dc-9943-bc9095a2166f
+# ╠═8739cc91-440a-4150-98ac-4ab62614528b
+# ╟─a44866e1-cccc-42c4-a6ab-a09ed770521c
 # ╠═69167b33-034d-480b-9a06-193c11c61c49
 # ╠═77398e1c-55a3-4ae7-868a-cdb7cdf2a8f2
 # ╠═47943756-3c8d-4241-ad2a-e02e55965685
+# ╠═a043b75e-3a41-4614-85b5-a752f994cf25
+# ╟─b12971ba-373b-4abd-b2db-63cb1bd2a407
 # ╠═97b50f22-b883-47fe-a4f1-7c3d8d435d82
 # ╠═e67e0207-8d63-4137-9d38-9f60a10091a5
+# ╠═a2d0128d-79fc-499b-a5fb-1cb204976b8c
+# ╟─0c65bcd5-1636-4aff-a975-156e53e9def4
+# ╟─8eb1e7d2-12ff-4d8d-bee8-71d4c6da11cf
+# ╠═b2745ea1-a9fc-4671-89b5-756c185321de
+# ╟─9d0e6b0a-a54a-4af1-9950-8307ef1e25c4
+# ╟─283b6890-89ce-4c57-ac4f-bd5e17ea1329
+# ╟─e0ca1162-7e30-4d61-b7c1-e8b31dd46cd3
+# ╟─9b633282-cbed-44b6-8d6a-70e0e740f1df
+# ╟─ac4f0393-b3ba-4b86-8415-12aa2e756995
+# ╟─83ce4f65-6aae-4484-b11e-73194d5e4271
+# ╠═460d0d45-c225-476c-bad5-c8cca105c06e
+# ╠═8214f1e7-f8ad-44ef-9be7-ec5b930e399d
+# ╠═f4e715da-809f-42e5-a948-f8d4de5e297e
+# ╠═cf74f673-230a-4135-8c67-48d6350346c7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
