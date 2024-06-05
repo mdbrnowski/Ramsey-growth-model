@@ -85,7 +85,7 @@ With the increase of time ``T``, a special property of the capital function can 
 """
 
 # ╔═╡ 69167b33-034d-480b-9a06-193c11c61c49
-kss = RamseyGrowthModel.steady_state_K(my_model)
+kss = steady_state_K(my_model)
 
 # ╔═╡ 77398e1c-55a3-4ae7-868a-cdb7cdf2a8f2
 kss_best_allocation = solve(my_model, 100, kss)
@@ -168,7 +168,7 @@ md"""
 custom_allocation = solve(custom_model, t, k_0/10)
 
 # ╔═╡ 8214f1e7-f8ad-44ef-9be7-ec5b930e399d
-custom_kss = RamseyGrowthModel.steady_state_K(custom_model)
+custom_kss = steady_state_K(custom_model)
 
 # ╔═╡ f4e715da-809f-42e5-a948-f8d4de5e297e
 plot_capital(custom_allocation, custom_kss)

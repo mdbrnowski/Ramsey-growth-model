@@ -30,6 +30,10 @@ GrowthModel
 ```
 
 ```@docs
+RamseyGrowthModel.steady_state_K
+```
+
+```@docs
 solve
 ```
 
