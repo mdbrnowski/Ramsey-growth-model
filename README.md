@@ -5,6 +5,19 @@
 
 Ramsey growth model (Ramsey-Cass-Koopmans model) implemented and solved in Julia.
 
+![Plot of the capital over time with the steady state marked](https://github.com/mdbrnowski/Ramsey-growth-model/assets/59224943/9a33e23c-76b4-4598-a980-0e3d05901bf9)
+
+For a demo, run [example.jl](example.jl) with Pluto.
+
+```shell
+julia --project=.
+```
+
+```julia
+using Pluto
+Pluto.run()
+```
+
 ## Documentation
 
 Is available under [mdbrnowski.github.io/Ramsey-growth-model](https://mdbrnowski.github.io/Ramsey-growth-model/).
