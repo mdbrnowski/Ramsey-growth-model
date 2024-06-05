@@ -83,8 +83,8 @@ function shooting(model::GrowthModel, T::Integer, K₀::Real, C₀::Real)::DataF
     allocation
 end
 
-"""
-Returns steady state capital K, to which capital Kₜ converges for large values of T.
+@doc raw"""
+Returns steady state capital ``K``, to which capital ``K_t`` converges for large values of ``T``.
 
 ```julia
 steady_state_K(model::GrowthModel)
@@ -113,6 +113,8 @@ solve(model::GrowthModel, T::Union{Integer,typeof(Inf)}, K₀::Real; kwargs...)
 * `model` - previously defined growth model
 * `T` - considered time horizon
 * `K₀` - initial capital
+
+Argument `T` should be of type `Integer` or equal to `Inf`. Passing a floating point value will raise an error.
 
 # Keyword Arguments
 
