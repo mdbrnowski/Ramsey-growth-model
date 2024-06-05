@@ -1,6 +1,6 @@
 name = "RamseyGrowthModel"
 uuid = "d3b58844-8b75-44dd-9e60-01c7b9b67cff"
-authors = ["Michał Dobranowski <mdbrnowski@gmail.com>"]
+authors = ["Michał Dobranowski <mdbrnowski@gmail.com>", "Joanna Konieczny <joanna.konieczny.contact@gmail.com>"]
 version = "0.1.0"
 
 [deps]

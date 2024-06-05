@@ -1,6 +1,6 @@
 module RamseyGrowthModel
 
-export GrowthModel, solve
+export GrowthModel, solve, steady_state_K
 
 using DataFrames
 using ForwardDiff
