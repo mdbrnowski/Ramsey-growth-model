@@ -5,17 +5,17 @@
 
 Ramsey growth model (Ramsey-Cass-Koopmans model) implemented and solved in Julia.
 
-<img src="https://github.com/mdbrnowski/Ramsey-growth-model/assets/59224943/2e1f1564-903a-44f7-b422-329411dbbeeb" width=60% alt="Plot of the capital over time with the steady state marked">
+<img src="https://github.com/mdbrnowski/Ramsey-growth-model/assets/59224943/2e1f1564-903a-44f7-b422-329411dbbeeb" width=600px alt="Plot of the capital over time with the steady state marked">
 
 For a demo, run [example.jl](example.jl) with Pluto.
 
-```shell
+```bash
 julia --project=.
 ```
 
-```julia
-using Pluto
-Pluto.run()
+```julia-repl
+julia> using Pluto
+julia> Pluto.run()
 ```
 
 ## Documentation
